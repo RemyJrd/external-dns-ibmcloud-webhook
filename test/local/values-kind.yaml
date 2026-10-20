@@ -1,0 +1,21 @@
+image: {repository: registry.k8s.io/external-dns/external-dns, tag: v0.23.0, pullPolicy: IfNotPresent}
+imagePullSecrets: []
+interval: 10s
+logLevel: debug
+provider:
+  name: webhook
+  webhook:
+    image: {repository: external-dns-ibmcloud-webhook, tag: local, pullPolicy: IfNotPresent}
+    env:
+      - {name: IBMCLOUD_API_KEY, valueFrom: {secretKeyRef: {name: external-dns-ibmcloud-operator-apikey, key: apikey}}}
+      - {name: DNS_INSTANCE_ID, value: local-instance}
+      - {name: DOMAIN_FILTER, value: estreem.lan}
+      - {name: IAM_URL, value: "http://172.18.0.1:9999"}
+      - {name: DNS_API_URL, value: "http://172.18.0.1:9999/v1"}
+securityContext:
+  privileged: false
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  runAsNonRoot: true
+  runAsUser: 1001910000
+  capabilities: {drop: ["ALL"]}
